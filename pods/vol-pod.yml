@@ -1,0 +1,25 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: vol-pod
+  labels:
+    env: uat
+spec:
+  containers:
+    - name: vol-pod
+      image: alpine:latest
+      command: ["sleep", "3600"]  # command expects an array and is used as entrypoint
+      # volume can be mounted to provide app configs
+      volumeMounts:
+        - name: appconf
+          mountPath: /etc/config/configmap
+        - name: dbconf
+          mountPath: /etc/config/secret
+  # assign configmap & secret as volumes
+  volumes:
+    - name: appconf
+      configMap: 
+        name: app-config
+    - name: dbconf
+      secret: 
+        secretName: db-secret  # notice key is 'secretName' not 'name'

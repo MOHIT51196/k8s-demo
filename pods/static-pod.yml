@@ -1,0 +1,24 @@
+# Put this yaml file in /etc/kubernetes/manifests/
+# kubelet will monitor this path and create the static pod in cluster
+# Static pods are not managed by k8s control plane but kubelet itself
+# Mirror pod is created by k8s to read or view the static pod via kubectl
+
+# You cannot perform update or delete operations on this mirror pod
+# as static pods are not controlled by k8s control plane
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: static-pod
+  labels:
+    name: static-pod
+spec:
+  containers:
+  - name: static-pod
+    image: nginx:latest
+    resources:
+      limits:
+        memory: "128Mi"
+        cpu: "150m"
+    ports:
+      - containerPort: 80

@@ -1,0 +1,31 @@
+apiVersion: apps/v1  # see it using kubectl api-resources
+kind: Deployment
+# metadata for deployments
+metadata:
+  name: gateway
+  namespace: test
+  labels:
+    env: staging
+    author: mohit
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    # metadata for pods
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+        - name: nginx
+          image: nginx:latest
+          ports:
+            - containerPort: 80  # exposing container port
+          env:
+            - name: DBUSER          # env variable for pod
+              valueFrom:
+                configMapKeyRef:
+                  name: db-config   # config map name
+                  key: username     # key name in the config map

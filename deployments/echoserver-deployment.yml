@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: echoserver
+  labels:
+    author: mohitmalhotra
+spec:
+  restartPolicy: OnFailure
+  replicas: 1
+  selector:
+    matchLabels:
+      app: echo
+  template:
+    metadata:
+      labels:
+        app: echo
+        env: devstable
+    spec:
+      containers:
+        - name: echo-server
+          image: jmalloc/echo-server:0.3.6
+          ports:
+            - containerPort: 8080 

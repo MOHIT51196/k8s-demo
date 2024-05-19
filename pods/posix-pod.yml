@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: posix-pod
+  labels:
+    env: uat
+spec:
+  containers:
+    - name: alpine
+      image: alpine:latest
+      command: ["sleep", "1000"]
+      envFrom:  # use envFrom not env.valueFrom
+        - configMapRef:
+            name: posix-config  # name of posix config map

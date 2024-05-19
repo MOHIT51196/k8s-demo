@@ -1,0 +1,79 @@
+# Deployment which is created for a specific namespace
+# consists of config map and secrets provided via volume mount
+# with resource limits for safety and
+# with 2 replicas having liveness and readiness probes
+
+apiVersion: apps/v1   # verify it from kubectl api-resources
+kind: Deployment      # k8s object type
+metadata:             # meta data for deployment
+  name: http-echo
+  namespace: test
+  labels:
+    env: devstable
+    author: mohitmalhotra
+spec:                 # specification for deployment
+  replicas: 2
+  selector:           # helps deployment controller to indentify potentials pods
+    matchLabels:
+      app: echo-app
+  template:           # defines pod details
+    metadata:
+      labels:
+        app: echo-app # it should match with selector labels
+    spec:             # specification for pod
+      containers:
+        - name: http-echo
+          image: hashicorp/http-echo:alpine
+          ports:
+            - containerPort: 5678
+          args:
+            - -text="I am a container inside k8s cluster"
+          resources:  # resource constraints for containers
+            requests:
+              cpu: '100m' # 10% of a cpu core as '1000m' means 1 core
+              memory: '150Mi'
+            limits:
+              cpu: '150m'
+              memory: '200Mi'
+          env:
+            - name: APP_METADATA
+              valueFrom:
+                configMapKeyRef:
+                  name: app-config
+                  key: app.metadata
+          envFrom:
+            - configMapRef:
+                name: posix-config
+          volumeMounts:
+            - name: vol-db-config
+              mountPath: /etc/db/config
+            - name: vol-db-secret
+              mountPath: /etc/db/secret
+          # startupProb can also be added as it will execute first time
+          # if success then transfer the control to liveness probe
+          # if liveness fails it restarts the pod itself
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 5678
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 5
+          livenessProbe:
+            exec:
+              command: ["sh", "-c", "test -f /http-echo"]
+            periodSeconds: 5
+            failureThreshold: 3
+      volumes:
+        - name: vol-db-config
+          configMap:
+            name: db-config
+        - name: vol-db-secret
+          secret:
+            secretName: db-secret
+
+
+
+
+

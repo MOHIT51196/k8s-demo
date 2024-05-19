@@ -1,0 +1,13 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: tester-role
+  namespace: test
+  labels:
+    env: devstable
+rules:
+  - apiGroups: [""]  # "" represents core api groups whereas "*" represents all api groups
+    resources:
+      - pod
+    verbs:
+      - listr

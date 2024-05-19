@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: db-config
+  labels:
+    env: devstable
+data:
+  host: 192.168.1.109
+  username: mohit
+  version: 3.1.9

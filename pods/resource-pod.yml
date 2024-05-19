@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: resource-pod
+  labels:
+    env: devstable
+spec:
+  containers:
+  - name: nginx
+    image: nginx:latest
+    ports:
+      - containerPort: 80
+    resources:
+      requests:
+        cpu: "100m"  # 10% of a core, 1000m is equivalent to 1 core
+        memory: "128Mi"  # cannot use 'mi', it should be 'Mi'
+      limits:
+        cpu: "200m"  # more than 20%, process will throttle
+        memory: "256Mi"  # pod will die if memory exceed 256mb

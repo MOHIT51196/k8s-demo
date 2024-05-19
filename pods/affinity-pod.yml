@@ -1,0 +1,58 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: hard-affinity-pod
+  labels:
+    name: affinity-pod
+spec:
+  containers:
+  - name: http-echo
+    image: hashicorp/http-echo:alpine
+    resources:
+      limits:
+        memory: "128Mi"
+        cpu: "150m"
+    ports:
+      - containerPort: 5678
+  # nodeSelector:
+  #   disk: ssd
+  affinity:
+    nodeAffinity:
+      # matching label is a hard requirement, guarranteed
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+          - matchExpressions:
+              - key: disk
+                operator: In
+                values:
+                  - ssd
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: soft-affinity-pod
+  labels:
+    name: affinity-pod
+spec:
+  containers:
+  - name: alpine
+    image: alpine:latest
+    command: ["sleep", "300"]
+    resources:
+      limits:
+        memory: "128Mi"
+        cpu: "100m"
+  affinity:
+    nodeAffinity:
+      # prefferd but not gurranteed
+      # 'requiredDuringSchedulingRequiredDuringExecution' will be added in future as per docs
+      prefferedDuringSchedulingIgnoredDuringExecution:
+        - weight: 1
+          preference:
+            matchExpressions:
+              - key: disk
+                operator: In
+                values:
+                  - ssd
+         

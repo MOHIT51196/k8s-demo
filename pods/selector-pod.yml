@@ -1,0 +1,34 @@
+# kubectl get nodes --show-labels
+# kubectl label nodes <node name> <key>=<value>
+apiVersion: v1
+kind: Pod
+metadata:
+  name: selector-pod
+  namespace: test
+spec:
+  nodeSelector:         # pod will run on node with label mentioned
+    type: helper-slave
+  containers:
+    - name: selector-container
+      image: busybox:latest
+      command: ["sleep", "300"]
+      resources:
+        limits:
+          cpu: "150m"
+          memory: "256Mi"
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: node-pod
+  namespace: test
+spec:
+  nodeName: worker1     # pod will always run on specified node in cluster
+  containers:
+    - name: selector-container
+      image: busybox:latest
+      command: ["sleep", "300"]
+      resources:
+        limits:
+          cpu: "150m"
+          memory: "256Mi"

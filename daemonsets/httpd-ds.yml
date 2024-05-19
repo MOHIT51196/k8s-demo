@@ -1,0 +1,24 @@
+# Daemon set pod will run on every existing node and any newly joined node in cluster
+# restartPolicy for daemon set is Always
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: http-daemon
+  namespace: test
+spec:
+  selector:
+    matchLabels:
+      app: http-server
+  template:
+    metadata:
+      labels:
+        app: http-server
+    containers:
+      - name: http-server
+        image: httpd:latest
+        ports:
+          - containerPort: 80
+        resources:
+          limits:
+            cpu: "150m"
+            memory: "256Mi"
